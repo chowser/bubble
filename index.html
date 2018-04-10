@@ -13,7 +13,7 @@ https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
 <body>
 
    <script type="text/javascript">
-   var diameter = 5000 //max size of the bubbles
+   var diameter = 2500 //max size of the chart
 
    // Set packing Algorithm
    // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
@@ -74,10 +74,13 @@ https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
 
       //create the bubbles
       bubbles.append("circle")
-      .attr("r", function(d){ return d.r; })
-      .attr("cx", function(d){ return d.x; })
-      .attr("cy", function(d){ return d.y; })
-      .style("fill", function(d){ return d.color});
+      .attr("r", function(d){ return d.r })
+      .attr("cx", function(d){ return d.x })
+      .attr("cy", function(d){ return d.y })
+      .style("fill", function(d){ return d.color })
+      .append("title").text(function(d){ return d.name });
+
+
 
       //format the text for each bubble
       bubbles.append("text")
@@ -88,7 +91,7 @@ https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
       .style({
          "fill":"white",
          "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
-         "font-size": "12px"
+         "font-size": "8px"
       });
    })
    </script>
