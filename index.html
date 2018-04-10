@@ -1,0 +1,96 @@
+<!--
+References:
+https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
+
+-->
+
+<!doctype html>
+<head>
+   <script src="https://d3js.org/d3.v2.min.js"></script>
+   <title>Bubble Chart</title>
+</head>
+
+<body>
+
+   <script type="text/javascript">
+   var diameter = 5000 //max size of the bubbles
+
+   // Set packing Algorithm
+   // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
+   var bubble = d3.layout.pack()
+   .size([diameter, diameter])
+   .padding(1.5)
+   .sort(null)
+
+   var svg = d3.select("body")
+   .append("svg")
+   .attr("width", diameter)
+   .attr("height", diameter)
+   .attr("class", "bubble");
+
+   // Colby
+   d3.csv("data/babynames.csv", function(data) {
+      console.log(data)
+      //convert numerical values from strings to numbers
+      data = data.map(function(d){ d.value = +d["count"]; return d; });
+
+      // add color data
+      data = data.map(function(d){
+         if(d.gender == "M"){
+            d.color = "blue"
+            return d
+         }
+         else if(d.gender == "F"){
+            d.color = "pink"
+            return d
+         }
+      });
+
+
+      // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
+      function shuffle(array) {
+         var m = array.length, t, i;
+         // While there remain elements to shuffle…
+         while (m) {
+            // Pick a remaining element…
+            i = Math.floor(Math.random() * m--);
+            // And swap it with the current element.
+            t = array[m];
+            array[m] = array[i];
+            array[i] = t;
+         }
+         return array;
+      }
+      //bubbles needs very specific format, convert data to this.
+      // use the shuffle function to randomize the data, makes for prettier layouts.
+      var nodes = bubble.nodes({children:shuffle(data)}).filter(function(d) { return !d.children; });
+      console.log(nodes)
+      //setup the chart
+      var bubbles = svg.append("g")
+      .attr("transform", "translate(0,0)")
+      .selectAll(".bubble")
+      .data(nodes)
+      .enter();
+
+      //create the bubbles
+      bubbles.append("circle")
+      .attr("r", function(d){ return d.r; })
+      .attr("cx", function(d){ return d.x; })
+      .attr("cy", function(d){ return d.y; })
+      .style("fill", function(d){ return d.color});
+
+      //format the text for each bubble
+      bubbles.append("text")
+      .attr("x", function(d){ return d.x; })
+      .attr("y", function(d){ return d.y + 5; })
+      .attr("text-anchor", "middle")
+      .text(function(d){ return d["name"]; })
+      .style({
+         "fill":"white",
+         "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
+         "font-size": "12px"
+      });
+   })
+   </script>
+</body>
+</html>
