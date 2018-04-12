@@ -35,8 +35,7 @@
 
      // Colby
      d3.csv("data/babynames.csv", function(data) {
-       console.log(data)
-
+       // Filter data based on user selection.
        data = data.filter(function(d){
           return d.gender == "M"
        })
@@ -72,9 +71,6 @@
        }
 
        data = shuffle(data)
-
-
-
        //bubbles needs very specific format, convert data to this.
        // use the shuffle function to randomize the data, makes for prettier layouts.
        var nodes = bubble.nodes({children:data}).filter(function(d) { return d });
