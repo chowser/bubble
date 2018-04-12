@@ -14,22 +14,30 @@
 <body>
    <!-- top bar -->
    <div id="topbar" class="container-fluid" align="center">
-      <div class="dropdown">
-         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Dropdown button
-         </button>
-         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-         </div>
-      </div>
+
+      <label class="btn btn-primary active">
+         <input id="btnMale" type="checkbox" checked autocomplete="off">
+         Male
+      </label>
+
+      <label class="btn btn-danger active">
+         <input id="btnFemale" type="checkbox" checked autocomplete="off">
+         Female
+      </label>
+
+      <label for="inputNumber">How many?</label>
+      <select id="inputNumber" class="form-control">
+         <option selected=true value=10>Top 10</option>
+         <option value=100>Top 100</option>
+         <option value=1000>Top 1000</option>
+      </select>
    </div>
 
+</div>
 
-   <!-- chart container -->
-   <div id="chart" class="container-fluid" align="center">
-   </div>
+<!-- chart container -->
+<div id="chart" class="container-fluid" align="center">
+</div>
 </body>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -40,6 +48,23 @@
 <!-- d3 -->
 <script src="https://d3js.org/d3.v2.min.js"></script>
 <script type="text/javascript">
+$(document).ready(function(){
+
+})
+// Set up form
+$("#btnMale")
+.on("change", function(d){
+   filter()
+   drawChart()
+})
+
+$("#btnFemale")
+.on("change", function(d){
+})
+
+$("#inputNumber")
+.on("change", function(d){
+})
 var diameter = 2000 //max size of the chart
 
 // Set packing Algorithm
@@ -55,17 +80,16 @@ var svg = d3.select("#chart")
 .attr("height", diameter)
 .attr("class", "bubble")
 
-d3.csv("data/babynames.csv", function(data) {
-   // Filter data based on user selection.
-   data = data.filter(function(d){
-      return d.gender == "M"
-   })
+var data = d3.csv("data/babynames.csv", function(d){})
+var filteredData = filter(data)
+
+function filter(data){
 
    //convert numerical values from strings to numbers
-   data = data.map(function(d){ d.value = +d.count; return d; })
+   filteredData = data.map(function(d){ d.value = +d.count; return d; })
 
    // add color data
-   data = data.map(function(d){
+   filteredData = data.map(function(d){
       if(d.gender == "M"){
          d.color = "blue"
          return d
@@ -91,11 +115,37 @@ d3.csv("data/babynames.csv", function(data) {
       return array;
    }
 
-   data = shuffle(data)
+   filteredData = shuffle(filteredData)
+   return filteredData
+}
 
+/*
+function filter(data) {
+selectionMale = $("#btnMale").is(':checked')
+selectionFemale = $("#btnMale").is(':checked')
+selectionDropdown = $("#inputNumber").val()
+
+if(selectionMale){
+filteredData = data.filter(function(d){
+return d.gender == "M"
+})
+}
+if(selectionFemale){
+filteredData = data.filter(function(d){
+return d.gender == "F"
+})
+}
+filteredData = shuffle(filteredData)
+}
+
+// Filter data based on user selection.
+filteredData = filter(data)
+*/
+
+function drawChart(){
    //bubbles needs very specific format, convert data to this.
    // use the shuffle function to randomize the data, makes for prettier layouts.
-   var nodes = bubble.nodes({children:data}).filter(function(d) { return d });
+   var nodes = bubble.nodes({children:filteredData}).filter(function(d) { return d });
 
    //setup the chart
    var bubbles = svg.append("g")
@@ -103,7 +153,7 @@ d3.csv("data/babynames.csv", function(data) {
    .attr("fill","green")
    .selectAll(".bubble")
    .data(nodes)
-   .enter();
+   .enter()
 
    //create the bubbles
    bubbles.append("circle")
@@ -111,7 +161,7 @@ d3.csv("data/babynames.csv", function(data) {
    .attr("cx", function(d){ return d.x })
    .attr("cy", function(d){ return d.y })
    .style("fill", function(d){ return d.color })
-   .append("title").text(function(d){ return d.name });
+   .append("title").text(function(d){ return d.name })
 
    //format the text for each bubble
    bubbles.append("text")
@@ -123,8 +173,9 @@ d3.csv("data/babynames.csv", function(data) {
       "fill":"white",
       "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
       "font-size": "8px"
-   });
-})
+   })
+}
+
 </script>
 
 </html>
