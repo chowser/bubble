@@ -1,114 +1,115 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+   <!-- Required meta tags -->
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 
-    <title>Hello, world!</title>
-    <script src="https://d3js.org/d3.v2.min.js"></script>
-  </head>
-  <body>
-  <div class="container-fluid" align="center">
-     Hello World
- </div>
-  </body>
-     <script type="text/javascript">
-     d3.select("div.container-fluid").style("background-color", "black");
-     var diameter = 600 //max size of the chart
+   <title>Hello, world!</title>
 
-     // Set packing Algorithm
-     // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
-     var bubble = d3.layout.pack()
-     .size([diameter, diameter])
-     .padding(1.5)
-     .sort(null)
+</head>
+<body>
+   <!-- chart container -->
+   <div id="chart" class="container-fluid" align="center">
+   </div>
+</body>
 
-     var svg = d3.select("div.container-fluid")
-     .append("svg")
-     .attr("width", diameter)
-     .attr("height", diameter)
-     .attr("class", "bubble");
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
-     // Colby
-     d3.csv("data/babynames.csv", function(data) {
-       // Filter data based on user selection.
-       data = data.filter(function(d){
-          return d.gender == "M"
-       })
+<!-- d3 -->
+<script src="https://d3js.org/d3.v2.min.js"></script>
+<script type="text/javascript">
+var diameter = 600 //max size of the chart
 
-       //convert numerical values from strings to numbers
-       data = data.map(function(d){ d.value = +d.count; return d; })
+// Set packing Algorithm
+// https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
+var bubble = d3.layout.pack()
+.size([diameter, diameter])
+.padding(1.5)
+.sort(null)
 
-       // add color data
-       data = data.map(function(d){
-          if(d.gender == "M"){
-              d.color = "blue"
-              return d
-          }
-          else if(d.gender == "F"){
-              d.color = "pink"
-              return d
-          }
-       })
+var svg = d3.select("#chart")
+.append("svg")
+.attr("width", diameter)
+.attr("height", diameter)
+.attr("class", "bubble");
 
-       // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
-       function shuffle(array) {
-          var m = array.length, t, i;
-          // While there remain elements to shuffle…
-          while (m) {
-              // Pick a remaining element…
-              i = Math.floor(Math.random() * m--);
-              // And swap it with the current element.
-              t = array[m];
-              array[m] = array[i];
-              array[i] = t;
-          }
-          return array;
-       }
+d3.csv("data/babynames.csv", function(data) {
+   // Filter data based on user selection.
+   data = data.filter(function(d){
+      return d.gender == "M"
+   })
 
-       data = shuffle(data)
-       //bubbles needs very specific format, convert data to this.
-       // use the shuffle function to randomize the data, makes for prettier layouts.
-       var nodes = bubble.nodes({children:data}).filter(function(d) { return d });
-       console.log(nodes)
-       //setup the chart
-       var bubbles = svg.append("g")
-       .attr("transform", "translate(0,0)")
-       .selectAll(".bubble")
-       .data(nodes)
-       .enter();
+   //convert numerical values from strings to numbers
+   data = data.map(function(d){ d.value = +d.count; return d; })
 
-       //create the bubbles
-       bubbles.append("circle")
-       .attr("r", function(d){ return d.r })
-       .attr("cx", function(d){ return d.x })
-       .attr("cy", function(d){ return d.y })
-       .style("fill", function(d){ return d.color })
-       .append("title").text(function(d){ return d.name });
+   // add color data
+   data = data.map(function(d){
+      if(d.gender == "M"){
+         d.color = "blue"
+         return d
+      }
+      else if(d.gender == "F"){
+         d.color = "pink"
+         return d
+      }
+   })
+
+   // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
+   function shuffle(array) {
+      var m = array.length, t, i;
+      // While there remain elements to shuffle…
+      while (m) {
+         // Pick a remaining element…
+         i = Math.floor(Math.random() * m--);
+         // And swap it with the current element.
+         t = array[m];
+         array[m] = array[i];
+         array[i] = t;
+      }
+      return array;
+   }
+
+   data = shuffle(data)
+   //bubbles needs very specific format, convert data to this.
+   // use the shuffle function to randomize the data, makes for prettier layouts.
+   var nodes = bubble.nodes({children:data}).filter(function(d) { return d });
+   console.log(nodes)
+   //setup the chart
+   var bubbles = svg.append("g")
+   .attr("transform", "translate(0,0)")
+   .selectAll(".bubble")
+   .data(nodes)
+   .enter();
+
+   //create the bubbles
+   bubbles.append("circle")
+   .attr("r", function(d){ return d.r })
+   .attr("cx", function(d){ return d.x })
+   .attr("cy", function(d){ return d.y })
+   .style("fill", function(d){ return d.color })
+   .append("title").text(function(d){ return d.name });
 
 
 
-       //format the text for each bubble
-       bubbles.append("text")
-       .attr("x", function(d){ return d.x; })
-       .attr("y", function(d){ return d.y + 5; })
-       .attr("text-anchor", "middle")
-       .text(function(d){ return d["name"]; })
-       .style({
-          "fill":"white",
-          "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
-          "font-size": "8px"
-       });
-     })
-     </script>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+   //format the text for each bubble
+   bubbles.append("text")
+   .attr("x", function(d){ return d.x; })
+   .attr("y", function(d){ return d.y + 5; })
+   .attr("text-anchor", "middle")
+   .text(function(d){ return d["name"]; })
+   .style({
+      "fill":"white",
+      "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
+      "font-size": "8px"
+   });
+})
+</script>
 
 </html>
