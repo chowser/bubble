@@ -12,6 +12,21 @@
 
 </head>
 <body>
+   <!-- top bar -->
+   <div id="topbar" class="container-fluid" align="center">
+      <div class="dropdown">
+         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Dropdown button
+         </button>
+         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+         </div>
+      </div>
+   </div>
+
+
    <!-- chart container -->
    <div id="chart" class="container-fluid" align="center">
    </div>
@@ -25,7 +40,7 @@
 <!-- d3 -->
 <script src="https://d3js.org/d3.v2.min.js"></script>
 <script type="text/javascript">
-var diameter = 600 //max size of the chart
+var diameter = 2000 //max size of the chart
 
 // Set packing Algorithm
 // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
@@ -38,7 +53,7 @@ var svg = d3.select("#chart")
 .append("svg")
 .attr("width", diameter)
 .attr("height", diameter)
-.attr("class", "bubble");
+.attr("class", "bubble")
 
 d3.csv("data/babynames.csv", function(data) {
    // Filter data based on user selection.
@@ -77,13 +92,15 @@ d3.csv("data/babynames.csv", function(data) {
    }
 
    data = shuffle(data)
+
    //bubbles needs very specific format, convert data to this.
    // use the shuffle function to randomize the data, makes for prettier layouts.
    var nodes = bubble.nodes({children:data}).filter(function(d) { return d });
-   console.log(nodes)
+
    //setup the chart
    var bubbles = svg.append("g")
    .attr("transform", "translate(0,0)")
+   .attr("fill","green")
    .selectAll(".bubble")
    .data(nodes)
    .enter();
@@ -95,8 +112,6 @@ d3.csv("data/babynames.csv", function(data) {
    .attr("cy", function(d){ return d.y })
    .style("fill", function(d){ return d.color })
    .append("title").text(function(d){ return d.name });
-
-
 
    //format the text for each bubble
    bubbles.append("text")
