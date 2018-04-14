@@ -49,126 +49,123 @@
 <script src="https://d3js.org/d3.v2.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+   // load and process data from csv
+   d3.csv("data/babynames.csv", function(data) {
+      // form event handlers
+      $("#btnMale")
+      .on("change", function(d){
+         draw()
+      })
 
-})
+      $("#btnFemale")
+      .on("change", function(d){
+         draw()
+      })
 
-// form event handlers
-$("#btnMale")
-.on("change", function(d){
-   testvar = filter(data)
-   console.log(testvar)
+      $("#inputNumber")
+      .on("change", function(d){
+         draw()
+      })
 
-})
-
-$("#btnFemale")
-.on("change", function(d){
-})
-
-$("#inputNumber")
-.on("change", function(d){
-})
-// max size of the chart
-var diameter = 2000
-
-// Set packing Algorithm
-// https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
-var bubble = d3.layout.pack()
-.size([diameter, diameter])
-.padding(1.5)
-.sort(null)
-
-var svg = d3.select("body")
-.append("svg")
-.attr("width", diameter)
-.attr("height", diameter)
-.attr("class", "bubble");
-
-function filter(data){
-
-}
-
-
-// load and process data from csv
-d3.csv("data/babynames.csv", function(data) {
-   selectionMale = $("#btnMale").is(':checked')
-   selectionFemale = $("#btnMale").is(':checked')
-   selectionDropdown = $("#inputNumber").val()
-   insidedata = data
-   array = function(insidedata){
-      if(selectionMale){
-         return insidedata.gender == "M"
-      }
-      else{
-         return []
-      }
-   }
-
-   //convert numerical values from strings to numbers
-   data = data.map(function(d){
-      d.value = +d["count"]
-      return d
-   })
-
-   // add color data
-   data = data.map(function(d){
-      if(d.gender == "M"){
-         d.color = "blue"
+      //convert numerical values from strings to numbers
+      data = data.map(function(d){
+         d.value = +d["count"]
          return d
+      })
+
+      // add color data
+      data = data.map(function(d){
+         if(d.gender == "M"){
+            d.color = "blue"
+            return d
+         }
+         else if(d.gender == "F"){
+            d.color = "pink"
+            return d
+         }
+      })
+
+      data = shuffle(data)
+
+      // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
+      function shuffle(array) {
+         var m = array.length, t, i
+         // While there remain elements to shuffle…
+         while (m) {
+            // Pick a remaining element…
+            i = Math.floor(Math.random() * m--)
+            // And swap it with the current element.
+            t = array[m]
+            array[m] = array[i]
+            array[i] = t
+         }
+         return array
       }
-      else if(d.gender == "F"){
-         d.color = "pink"
-         return d
+
+      console.log("Filtered Data")
+      console.log(filter(data))
+      function filter(data){
+         var selectionMale = $("#btnMale").is(':checked')
+         var selectionFemale = $("#btnMale").is(':checked')
+         var selectionDropdown = $("#inputNumber").val()
+         var maleArray = data.filter(function(d){
+            return d.gender == "M"
+         })
+         var femaleArray = data.filter(function(d){
+            return d.gender == "M"
+         })
+         var mergedArray = maleArray.concat(femaleArray)
+         return mergedArray
+      }
+
+      function draw(){
+         filteredData = filter(data)
+         // max size of the chart
+         var diameter = 2000
+
+         // Set packing Algorithm
+         // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
+         var bubble = d3.layout.pack()
+         .size([diameter, diameter])
+         .padding(1.5)
+         .sort(null)
+
+         var svg = d3.select("body")
+         .append("svg")
+         .attr("width", diameter)
+         .attr("height", diameter)
+         .attr("class", "bubble")
+
+         // create bubble nodes
+         var nodes = bubble.nodes({children:filter(data)}).filter(function(d) { return d });
+         //setup the chart
+         var bubbles = svg.append("g")
+         .attr("transform", "translate(0,0)")
+         .selectAll(".bubble")
+         .data(nodes)
+         .enter();
+
+         //create the bubbles
+         bubbles.append("circle")
+         .attr("r", function(d){ return d.r })
+         .attr("cx", function(d){ return d.x })
+         .attr("cy", function(d){ return d.y })
+         .style("fill", function(d){ return d.color })
+         .append("title").text(function(d){ return d.name })
+
+         //format the text for each bubble
+         bubbles.append("text")
+         .attr("x", function(d){ return d.x; })
+         .attr("y", function(d){ return d.y + 5; })
+         .attr("text-anchor", "middle")
+         .text(function(d){ return d["name"]; })
+         .style({
+            "fill":"white",
+            "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
+            "font-size": "8px"
+         })
       }
    })
-
-   data = shuffle(data)
-
-   // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
-   function shuffle(array) {
-      var m = array.length, t, i;
-      // While there remain elements to shuffle…
-      while (m) {
-         // Pick a remaining element…
-         i = Math.floor(Math.random() * m--);
-         // And swap it with the current element.
-         t = array[m];
-         array[m] = array[i];
-         array[i] = t;
-      }
-      return array;
-   }
-   // create bubble nodes
-   var nodes = bubble.nodes({children:shuffle(data)}).filter(function(d) { return d });
-   console.log(nodes)
-   //setup the chart
-   var bubbles = svg.append("g")
-   .attr("transform", "translate(0,0)")
-   .selectAll(".bubble")
-   .data(nodes)
-   .enter();
-
-   //create the bubbles
-   bubbles.append("circle")
-   .attr("r", function(d){ return d.r })
-   .attr("cx", function(d){ return d.x })
-   .attr("cy", function(d){ return d.y })
-   .style("fill", function(d){ return d.color })
-   .append("title").text(function(d){ return d.name });
-
-
-
-   //format the text for each bubble
-   bubbles.append("text")
-   .attr("x", function(d){ return d.x; })
-   .attr("y", function(d){ return d.y + 5; })
-   .attr("text-anchor", "middle")
-   .text(function(d){ return d["name"]; })
-   .style({
-      "fill":"white",
-      "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
-      "font-size": "8px"
-   });
 })
 </script>
-
 </html>
