@@ -31,6 +31,7 @@
          <option value=100>Top 100</option>
          <option value=1000>Top 1000</option>
       </select>
+      <button id="btnDraw" type="button" class="btn btn-secondary">Draw</button>
    </div>
 
 </div>
@@ -49,29 +50,21 @@
 <script src="https://d3js.org/d3.v2.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+   console.log("document.ready()")
+
+   var loadedData
+   var selectionMale = $("#btnMale").prop('checked')
+   var selectionFemale = $("#btnMale").prop('checked')
+   var selectionDropdown = $("#inputNumber").val()
    // load and process data from csv
    d3.csv("data/babynames.csv", function(data) {
-      // form event handlers
-      $("#btnMale")
-      .on("change", function(d){
-         draw()
-      })
-
-      $("#btnFemale")
-      .on("change", function(d){
-         draw()
-      })
-
-      $("#inputNumber")
-      .on("change", function(d){
-         draw()
-      })
+      console.log("d3.csv()")
 
       //convert numerical values from strings to numbers
       data = data.map(function(d){
          d.value = +d["count"]
          return d
-      })
+      }) // end data.map()
 
       // add color data
       data = data.map(function(d){
@@ -83,89 +76,130 @@ $(document).ready(function(){
             d.color = "pink"
             return d
          }
+      })  //end data.map()
+
+      loadedData = data
+      console.log(loadedData)
+   }) // end d3.csv()
+
+   // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
+   function shuffle(array) {
+      console.log("shuffle()")
+      var m = array.length, t, i
+      // While there remain elements to shuffle…
+      while (m) {
+         // Pick a remaining element…
+         i = Math.floor(Math.random() * m--)
+         // And swap it with the current element.
+         t = array[m]
+         array[m] = array[i]
+         array[i] = t
+      }
+      console.log(array)
+      return array
+   } // end shuffle
+
+   function filter(loadedData){
+      console.log("filter()")
+      var maleArray = loadedData.filter(function(d){
+         if(selectionMale){
+            return d.gender == "M"
+         }
       })
 
-      data = shuffle(data)
-
-      // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
-      function shuffle(array) {
-         var m = array.length, t, i
-         // While there remain elements to shuffle…
-         while (m) {
-            // Pick a remaining element…
-            i = Math.floor(Math.random() * m--)
-            // And swap it with the current element.
-            t = array[m]
-            array[m] = array[i]
-            array[i] = t
+      var femaleArray = loadedData.filter(function(d){
+         if(selectionFemale){
+            return d.gender == "F"
          }
-         return array
-      }
+      })
 
-      console.log("Filtered Data")
-      console.log(filter(data))
-      function filter(data){
-         var selectionMale = $("#btnMale").is(':checked')
-         var selectionFemale = $("#btnMale").is(':checked')
-         var selectionDropdown = $("#inputNumber").val()
-         var maleArray = data.filter(function(d){
-            return d.gender == "M"
-         })
-         var femaleArray = data.filter(function(d){
-            return d.gender == "M"
-         })
-         var mergedArray = maleArray.concat(femaleArray)
-         return mergedArray
-      }
+      var mergedArray = maleArray.concat(femaleArray)
 
-      function draw(){
-         filteredData = filter(data)
-         // max size of the chart
-         var diameter = 2000
+      console.log("mergedArray")
+      console.log(mergedArray)
+      return mergedArray
+   } // end filter()
 
-         // Set packing Algorithm
-         // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
-         var bubble = d3.layout.pack()
-         .size([diameter, diameter])
-         .padding(1.5)
-         .sort(null)
+   function draw(data){
+      console.log("draw()")
+      // max size of the chart
+      var diameter = 2000
 
-         var svg = d3.select("body")
-         .append("svg")
-         .attr("width", diameter)
-         .attr("height", diameter)
-         .attr("class", "bubble")
+      // Set packing Algorithm
+      // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
+      var bubble = d3.layout.pack()
+      .size([diameter, diameter])
+      .padding(1.5)
+      .sort(null)
 
-         // create bubble nodes
-         var nodes = bubble.nodes({children:filter(data)}).filter(function(d) { return d });
-         //setup the chart
-         var bubbles = svg.append("g")
-         .attr("transform", "translate(0,0)")
-         .selectAll(".bubble")
-         .data(nodes)
-         .enter();
+      var svg = d3.select("body")
+      .append("svg")
+      .attr("width", diameter)
+      .attr("height", diameter)
+      .attr("class", "bubble")
 
-         //create the bubbles
-         bubbles.append("circle")
-         .attr("r", function(d){ return d.r })
-         .attr("cx", function(d){ return d.x })
-         .attr("cy", function(d){ return d.y })
-         .style("fill", function(d){ return d.color })
-         .append("title").text(function(d){ return d.name })
+      // create bubble nodes
+      var nodes = bubble.nodes({children:data})
 
-         //format the text for each bubble
-         bubbles.append("text")
-         .attr("x", function(d){ return d.x; })
-         .attr("y", function(d){ return d.y + 5; })
-         .attr("text-anchor", "middle")
-         .text(function(d){ return d["name"]; })
-         .style({
-            "fill":"white",
-            "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
-            "font-size": "8px"
-         })
-      }
-   })
-})
-</script>
-</html>
+      //setup the chart
+      var bubbles = svg.append("g")
+      .attr("transform", "translate(0,0)")
+      .selectAll(".bubble")
+      .data(nodes)
+      .enter()
+
+      //create the bubbles
+      bubbles.append("circle")
+      .attr("r", function(d){ return d.r })
+      .attr("cx", function(d){ return d.x })
+      .attr("cy", function(d){ return d.y })
+      .style("fill", function(d){ return d.color })
+      .append("title").text(function(d){ return d.name })
+
+      //format the text for each bubble
+      bubbles.append("text")
+      .attr("x", function(d){ return d.x })
+      .attr("y", function(d){ return d.y + 5 })
+      .attr("text-anchor", "middle")
+      .text(function(d){ return d.name })
+      .style({
+         "fill":"white",
+         "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
+         "font-size": "8px" })
+
+         // remove bubbles that no longer exist in the data selection
+         //bubbles.exit().remove()
+         console.log("draw() finished")
+      } // end draw()
+
+      // attach event handlers to form
+      $("#btnMale").change(function(){
+         console.log("btnMale clicked")
+         selectionMale = $(this).prop('checked')
+         console.log($(this).prop('checked'))
+      }) // end change()
+
+      $("#btnFemale").change(function(){
+         console.log("btnFemale clicked")
+         selectionFemale = $(this).prop('checked')
+         console.log($(this).prop('checked'))
+      }) // end change()
+
+      $("#inputNumber").change(function(){
+         console.log("inputNumber clicked")
+         selectionDropdown = $("#inputNumber").val()
+         console.log(selectionDropdown)
+      }) // end change()
+
+      $("#btnDraw").click(function(){
+         console.log("btnDraw clicked")
+         filteredData = filter(loadedData)
+         console.log("loadedData")
+         console.log(loadedData)
+         console.log("filteredData")
+         console.log(filteredData)
+         draw(filteredData)
+      }) // end click()
+   }) // end $(document).ready()
+   </script>
+   </html>
