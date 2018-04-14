@@ -54,13 +54,13 @@ $(document).ready(function(){
    console.log("document.ready()")
 
    // max size of the chart
-   var diameter = 2000
+   var diameter = 500
 
    // Set packing Algorithm
    // https://github.com/d3/d3-3.x-api-reference/blob/master/Pack-Layout.md#sort
    var bubble = d3.layout.pack()
    .size([diameter, diameter])
-   .padding(1.5)
+   .padding(5)
    .sort(null)
 
    var svg = d3.select("body")
@@ -116,6 +116,22 @@ $(document).ready(function(){
       return array
    } // end shuffle
 
+   function sortByName(array){
+      array.sort(function(a,b){
+         var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+         var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+         if (nameA < nameB) {
+            return -1;
+         }
+         if (nameA > nameB) {
+            return 1;
+         }
+         // names must be equal
+         return 0;
+      })
+      return array
+   }
+
    function filter(data){
       console.log("filter()")
       var maleArray = data.filter(function(d){
@@ -147,7 +163,7 @@ $(document).ready(function(){
          femaleArray = femaleArray.slice(femaleArray.length - 100,femaleArray.length - 1)
       }
 
-      var mergedArray = shuffle(maleArray.concat(femaleArray))
+      var mergedArray = sortByName(maleArray.concat(femaleArray))
 
       console.log("mergedArray")
       console.log(mergedArray)
