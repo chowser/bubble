@@ -181,7 +181,7 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
    function draw(data){
       console.log("draw()")
       // create bubble nodes
-      nodes = bubble.nodes({children:data})
+      nodes = bubble.children([data])
 
       // setup the chart
       bubbles = svg.append("g")
