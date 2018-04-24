@@ -11,55 +11,50 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
    <!-- Bootstrap CSS -->
    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 
-   <title>Hello, world!</title>
+   <title>Popular Name Bubbles</title>
 
 </head>
 <body>
    <center>
-   <div class="container-fluid">
-      <form class="form-inline">
-         <label class="my-1 mr-2" for="inputNumber">How many?</label>
-         <select id="inputNumber" class="custom-select my-1 mr-sm-2">
-            <option selected=true value="top10">Top 10</option>
-            <option value="top100">Top 100</option>
-            <option value="top500">Top 500</option>
-            <option value="bottom10">Bottom 10</option>
-            <option value="bottom100">Bottom 100</option>
-            <option value="bottom500">Bottom 500</option>
-         </select>
-
-         <div class="form-check form-check-inline">
-           <input class="form-check-input" type="checkbox" id="btnMale" checked>
-           <label class="form-check-label" for="btnMale">Male</label>
-         </div>
-         <div class="form-check form-check-inline">
-           <input class="form-check-input" type="checkbox" id="btnFemale" checked>
-           <label class="form-check-label" for="btnFemale">Female</label>
-         </div>
-         <div class="col-auto">
-            <button id="btnDraw" type="button" class="btn btn-secondary mb-2">Draw</button>
-         </div>
-
-      </form>
+      <div class="container-fluid">
+         <form class="form-inline">
+            <label class="my-1 mr-2" for="inputNumber">How many?</label>
+            <select id="inputNumber" class="custom-select my-1 mr-sm-2">
+               <option selected=true value="top10">Top 10</option>
+               <option value="top100">Top 100</option>
+               <option value="top500">Top 500</option>
+               <option value="bottom10">Bottom 10</option>
+               <option value="bottom100">Bottom 100</option>
+               <option value="bottom500">Bottom 500</option>
+            </select>
+            <div class="form-check form-check-inline">
+               <input class="form-check-input" type="checkbox" id="btnMale" checked>
+               <label class="form-check-label" for="btnMale">Male</label>
+            </div>
+            <div class="form-check form-check-inline">
+               <input class="form-check-input" type="checkbox" id="btnFemale" checked>
+               <label class="form-check-label" for="btnFemale">Female</label>
+            </div>
+            <div class="col-auto">
+               <button id="btnDraw" type="button" class="btn btn-secondary mb-2">Draw</button>
+            </div>
+         </form>
       </div>
       <div id="chart" align="center"
-      </div>
    </div>
+</div>
 </div>
 </center>
 </body>
 
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS, then d3.js -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 
-<!-- d3 -->
-<script src="https://d3js.org/d3.v2.min.js"></script>
 <script type="text/javascript">
-$(document).ready(function(){
-   console.log("document.ready()")
-
+   $(document).ready(function(){
    // max size of the chart
    var diameter = 1280
 
@@ -81,10 +76,9 @@ $(document).ready(function(){
    var selectionMale = $("#btnMale").prop('checked')
    var selectionFemale = $("#btnMale").prop('checked')
    var selectionDropdown = $("#inputNumber").val()
+
    // load and process data from csv
    d3.csv("data/babynames.csv", function(data) {
-      console.log("d3.csv()")
-
       //convert numerical values from strings to numbers
       data = data.map(function(d){
          d.value = +d.count
@@ -104,38 +98,36 @@ $(document).ready(function(){
       })  //end data.map()
 
       loadedData = data
-      console.log(loadedData)
    }) // end d3.csv()
 
    // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
    function shuffle(array) {
       console.log("shuffle()")
       var m = array.length, t, i
-      // While there remain elements to shuffle…
+      // while there remain elements to shuffle
       while (m) {
-         // Pick a remaining element…
+         // pick a remaining element
          i = Math.floor(Math.random() * m--)
-         // And swap it with the current element.
+         // swap it with the current element
          t = array[m]
          array[m] = array[i]
          array[i] = t
       }
-      console.log(array)
       return array
    } // end shuffle
 
    function sortByName(array){
       array.sort(function(a,b){
-         var nameA = a.name.toUpperCase(); // ignore upper and lowercase
-         var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+         var nameA = a.name.toUpperCase() // ignore upper and lowercase
+         var nameB = b.name.toUpperCase() // ignore upper and lowercase
          if (nameA < nameB) {
-            return -1;
+            return -1
          }
          if (nameA > nameB) {
-            return 1;
+            return 1
          }
          // names must be equal
-         return 0;
+         return 0
       })
       return array
    }
@@ -192,14 +184,14 @@ $(document).ready(function(){
       // create bubble nodes
       nodes = bubble.nodes({children:data})
 
-      //setup the chart
+      // setup the chart
       bubbles = svg.append("g")
       .attr("transform", "translate(0,0)")
       .selectAll(".bubble")
       .data(nodes)
       .enter()
 
-      //create the bubbles
+      // create the bubbles
       bubbles.append("circle")
       .attr("r", function(d){ return d.r })
       .attr("cx", function(d){ return d.x })
@@ -209,7 +201,7 @@ $(document).ready(function(){
          return "Name: " + d.name + "\n" + "Count: " + d.count
       })
 
-      //format the text for each bubble
+      // format the text for each bubble
       bubbles.append("text")
       .attr("x", function(d){ return d.x })
       .attr("y", function(d){ return d.y + 5 })
@@ -256,5 +248,5 @@ $(document).ready(function(){
          }
       }) // end click()
    }) // end $(document).ready()
-   </script>
-   </html>
+</script>
+</html>
