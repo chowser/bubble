@@ -102,7 +102,6 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
 
    // Fisher Yates Sort Algorithm https://bost.ocks.org/mike/shuffle/
    function shuffle(array) {
-      console.log("shuffle()")
       var m = array.length, t, i
       // while there remain elements to shuffle
       while (m) {
@@ -133,7 +132,6 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
    }
 
    function filter(data){
-      console.log("filter()")
       var maleArray = data.filter(function(d){
          if(selectionMale){
             return d.gender == "M"
@@ -178,13 +176,10 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
 
       var mergedArray = sortByName(maleArray.concat(femaleArray))
 
-      console.log("mergedArray")
-      console.log(mergedArray)
       return mergedArray
    } // end filter()
 
    function draw(data){
-      console.log("draw()")
       // create bubble nodes
       nodes = bubble.nodes({children:data})
 
@@ -212,29 +207,22 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
       .attr("text-anchor", "middle")
       .text(function(d){ return d.name })
       .style({
-         "fill":"#adadad", // gray
+         "fill":"#ae7efc", // purple
          "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
          "font-size": "14px" })
-         console.log("draw() finished")
       } // end draw()
 
       // attach event handlers to form
       $("#btnMale").change(function(){
-         console.log("btnMale clicked")
          selectionMale = $(this).prop('checked')
-         console.log($(this).prop('checked'))
       }) // end change()
 
       $("#btnFemale").change(function(){
-         console.log("btnFemale clicked")
          selectionFemale = $(this).prop('checked')
-         console.log($(this).prop('checked'))
       }) // end change()
 
       $("#inputNumber").change(function(){
-         console.log("inputNumber clicked")
          selectionDropdown = $("#inputNumber").val()
-         console.log(selectionDropdown)
       }) // end change()
 
       $("#btnDraw").click(function(){
