@@ -88,11 +88,11 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
       // add color data
       data = data.map(function(d){
          if(d.gender == "M"){
-            d.color = "#42d7f4"
+            d.color = "#42d7f4" // blue
             return d
          }
          else if(d.gender == "F"){
-            d.color = "#f780dd"
+            d.color = "#f780dd" // pink
             return d
          }
       })  //end data.map()
@@ -212,7 +212,7 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
       .attr("text-anchor", "middle")
       .text(function(d){ return d.name })
       .style({
-         "fill":"white",
+         "fill":"#adadad", // gray
          "font-family":"Helvetica Neue, Helvetica, Arial, san-serif",
          "font-size": "14px" })
          console.log("draw() finished")
