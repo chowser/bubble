@@ -238,15 +238,9 @@ Reference: https://jrue.github.io/coding/2014/exercises/basicbubblepackchart/
       }) // end change()
 
       $("#btnDraw").click(function(){
-         console.log("btnDraw clicked")
          if(selectionMale || selectionFemale){
-            filteredData = filter(loadedData)
-            shuffledData = shuffle(filteredData)
-            console.log("loadedData")
-            console.log(loadedData)
-            console.log("filteredData")
-            console.log(filteredData)
-            draw(shuffledData)
+            finalData = shuffle(filter(loadedData))
+            draw(finalData)
          }
          else{
             alert("You must select a gender.")
